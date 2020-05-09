@@ -1,0 +1,400 @@
+\documentclass[12pt]{article}%
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{comment}
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.2cm, right=2.2cm]%
+{geometry}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{changepage}
+\usepackage{amssymb}
+\usepackage{enumitem}
+
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+
+\usepackage{scrextend}
+
+\usepackage{graphicx}%
+\setcounter{MaxMatrixCols}{30}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+
+
+\documentclass{minimal}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\begin{document}
+
+\title{Homework 3}
+\author{Jeffery Russell}
+\date{\today}
+\maketitle
+
+\section{Strassen's algorithm}
+
+
+
+\begin{enumerate}[label=(\alph*)]
+
+\item 
+
+$$
+\begin{bmatrix}
+1 & 3\\
+7 & 5
+\end{bmatrix} \odot
+\begin{bmatrix}
+6 & 8\\
+4 & 2
+\end{bmatrix}\\*
+$$
+
+$S_1 = 6, S_2 = 4$\\
+$S_3 = 12, S_4 = -2$\\
+$S_5 = 5, S_6 = 8$\\
+$S_9 = -6, S_{10} = 14$\\
+\\
+$P_1 = 1*6 = 6, P_2 = 4*2 = 8$\\
+$P_3 = 6*12 = 72, P_4 = -2*5 = -10$\\
+$P_5 = 6*8 = 48, P_6 = -2*6 = -12$\\
+$P_7 = -6*14 = -84$\\
+
+$$
+= 
+\begin{bmatrix}
+c_{11} & c_{12}\\
+c_{21} & c_{22}
+\end{bmatrix} = 
+\begin{bmatrix}
+(P_5 + P_4 - P_2 + P_6) & (P_1+P_2)\\
+(P_3+P_4) & (P-5+P_1 - P_3 + P_7)
+\end{bmatrix} 
+$$
+
+$$
+= 
+\begin{bmatrix}
+(48 + (-10) - 8 + (-12)) & (6 + 8)\\
+(72 + (-10)) & (48 + 6 - 72 - (-84))
+\end{bmatrix} = 
+\begin{bmatrix}
+18 & 14\\
+62 & 66
+\end{bmatrix}
+$$
+
+
+\item 
+
+$$
+ A \odot B = 
+  \begin{cases}
+   A*B & \text{if } A_{rows} = 1 \\
+   \begin{bmatrix}
+c_{11} & c_{12}\\
+c_{21} & c_{22}
+\end{bmatrix}       & \text{otherwise}
+  \end{cases}
+$$
+
+Where:
+$A =
+\begin{bmatrix}
+A_{11} & A_{12}\\
+A_{21} & A_{22}
+\end{bmatrix}$
+
+$B =
+\begin{bmatrix}
+B_{11} & B_{12}\\
+B_{21} & B_{22}
+\end{bmatrix}$
+
+$c_{11} = A_{11} \odot B_{11} + A_{12} \odot B_{21}$\\
+$c_{12} = A_{11} \odot B_{12} + A_{12} \odot B_{22}$\\
+$c_{21} = A_{21} \odot B_{11} + A_{22} \odot B_{21}$\\
+$c_{22} = A_{21} \odot B_{12} + A_{22} \odot B_{22}$
+
+\newpage
+
+\begin{algorithm}
+\caption{Strassen's Algorithm}\label{euclid}
+\begin{algorithmic}[1]
+\Procedure{Strassen(A,B):}{}
+\State $\textit{n} \gets \text{number of rows in}\textit{ A}$
+\State $C \gets \textit{new n by n matrix}$
+\If {$\textit{n} = 1$}
+\State $c \gets A[1][1] * B[1][1]$ 
+\Else{}
+\State Sub partition A into 4 equal matrix quadrants A11, A12, A21, A22
+\State Sub partition B into 4 equal matrix quadrants B11, B12, B21, B22
+
+\State $s1 \gets B12 - B22$ 
+\State $s2 \gets A11 + A12$ 
+\State $s3 \gets A21 + A22$
+\State $s4 \gets B21 - B11$
+\State $s5 \gets A11 + A22$
+\State $s6 \gets B11 + B22$
+\State $s7 \gets A12 - A22$
+\State $s8 \gets B21 + B22$ 
+\State $s9 \gets A11 - A21$
+\State $s10 \gets B11 + B12$
+\State $p1 \gets Strassen(A11,S1)$ 
+\State $p2 \gets Strassen(S2,B22)$ 
+\State $p3 \gets Strassen(S3,B11)$
+\State $p4 \gets Strassen(A22,S4)$
+\State $p5 \gets Strassen(S5,S6)$
+\State $p6 \gets Strassen(S7,S8)$
+\State $p7 \gets Strassen(S9,S10)$
+\State $C[1][1] \gets p5 + p4 - p2 + p6$
+\State $C[1][2] \gets p1 + p2$
+\State $C[2][1] \gets p3 + p4$
+\State $C[2][2] \gets p5 + p1 - p3 + p7$
+\EndIf
+\State \textbf{return} C
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\item
+
+$T(1) = 1$\\
+$T(n) = 7T(\frac{n}{2}) + \frac{9}{2}n^2$\\
+$T(2^0) = 1$\\
+$T(2^m) = 7T(2^{m-1}) + \frac{9}{2}(2^m)^2$\\
+$= 7(7T(n^{m-2}) + \frac{9}{2}(2^{m-1})^2) + \frac{9}{2}(2^m)^2$\\
+$= 7^2T(n^{m-2}) + 7*\frac{9}{2}(2^{m-1})^2 + 7^0*\frac{9}{2}(2^m)^2$\\
+$= 7^2(7T(2^{m-3}) + \frac{9}{2}(2^{m-2})^2) + 7*\frac{9}{2}(2^{m-1})^2 + 7^0*\frac{9}{2}(2^m)^2$\\
+$= 7^3T(2^{m-3}) + 7^2\frac{9}{2}(2^{m-2})^2 + 7*\frac{9}{2}(2^{m-1})^2 + 7^0*\frac{9}{2}(2^m)^2$\\
+$= 7^kT(2^{m-k}) + 7^{(k-1)}\frac{9}{2}(2^{m-(k-1)})^2 + ... + 7^{k-k}*\frac{9}{2}(2^{m-(k-k)})^2$\\
+
+Let $m = k$\\
+$T(2^m)= 7^mT(2^{m-m}) + 7^{(m-1)}\frac{9}{2}(2^{m-(m-1)})^2 + ... + 7^{m-m}*\frac{9}{2}(2^{m-(m-m)})^2$\\
+$T(2^m)= 7^m + 7^{(m-1)}\frac{9}{2}(2^{1})^2 + ... + 7^{0}*\frac{9}{2}(2^{m})^2$\\
+$= 7^m + \frac{9}{2}\sum_{k=0}^{m-1}7^k(2^{m-k})^2$\\
+$= \frac{9}{2}\sum_{k=0}^{m}7^k(2^{2(m-k)}) - \frac{9}{2}7^m$\\
+$= \frac{9}{2}\sum_{k=0}^{m}7^k(2^{2m})(2^{-2k}) - \frac{9}{2}7^m$\\
+$= (2^{2m})\frac{9}{2}\sum_{k=0}^{m}7^k(2^{-2k}) - \frac{9}{2}7^m + 7^m$\\
+$= (2^{2m})\frac{9}{2}\sum_{k=0}^{m}\frac{7^k}{2^{2k}}) - \frac{7}{2}7^m$\\
+$= (2^{2m})\frac{9}{2}\sum_{k=0}^{m}(\frac{7}{4})^k - \frac{7}{2}7^m$\\
+$= (2^{2m})\frac{9}{2}(\frac{\frac{7}{4}^{m+1} -1)}{1.75-1}) - \frac{7}{2}7^m$\\
+$= (2^m)^2\frac{9}{2}\frac{4}{3}((\frac{7}{4})^{m+1}-1) - (\frac{7}{2})7^m$\\
+$= 6(2^m)^2((\frac{7}{4})^{m+1}-1) - (\frac{7}{2})7^m$\\
+$= 6(2^m)^2\frac{7}{4} - 6(2^m)^2 - (\frac{7}{2})7^m$\\
+$= \frac{21*7^m}{2} - 6(2^m)^2 - (\frac{7}{2})7^m$\\
+$= 7*7^m - 6 * 4^m$\\
+$T(n)= 7*n^{lg(7)} - 6 * n^2$\\
+$T(n) \approx 7*n^{2.81} - 6 * n^2$\\
+
+\item Modifying Strassen's Algorithm
+
+To make Strassen's algorithm to work with any n x n matrix we would pad the two matrices being multiplied with zeros to become two m x m matrix where m is a power of 2. The answer would be the result but only taking out the n x n section out of the m x m product.\\
+
+To prove that this is still asymptotically equal we will demonstrate that at most the dimensions of the matrix being multiply double. 
+
+let m = length of new padded matrices being multiplied \\
+let n = length of original matrices being multiplied \\
+Since:
+$2^{k-1} < n < 2^k = m$\\
+Note:
+$2n > 2^{k+1} > m$\\
+Hence:
+$T(n) \in \Theta((2n)^{lg(7)}) = \Theta(n^{lg7})$
+
+
+\item
+
+$(a+bi)(c+di)$\\
+$= ac + adi + bci + bdi^2$\\
+$= ac + adi + bci - bd$\\
+$Real Part= ac - bd$\\
+$Imaginary Part= (a + b)(c+d) -ac - bd$\\
+
+Consider:\\
+$A_1 = ac$\\
+$A_2 = bd$\\
+$A_3 = (a+b)(c+d)$\\
+
+Then:\\
+Real Part = $A_1 - A_2$\\
+Imaginary Part = $A_3 - A_1 - A_2$\\
+
+\end{enumerate}
+
+
+\section{Recurrence}
+
+\begin{enumerate}[label=(\alph*)]
+
+\item
+\textbf{Lemma 1}: For any n $\in \mathbb{N}, \left\lfloor\dfrac{n+1}{2}\right\rfloor = \left\lceil\dfrac{n}{2}\right\rceil$\\
+
+\textbf{Proof By Cases:}\\
+\textbf{Even Case:}\\
+n can be represented as 2m for some value of m\\
+$LHS = \left\lfloor\dfrac{n+1}{2}\right\rfloor = \left\lfloor\dfrac{2m+1}{2}\right\rfloor$\\
+$=\left\lfloor m + \dfrac{1}{2}\right\rfloor = m$\\
+$RHS = \left\lceil\dfrac{n}{2}\right\rceil = \left\lceil\dfrac{2m}{2}\right\rceil$
+$=\left\lceil m \right\rceil = m = LHS$
+
+\textbf{Odd Case:}\\
+n can be represented as (2m + 1) for some value of m\\
+$LHS = \left\lfloor\dfrac{n+1}{2}\right\rfloor = \left\lfloor\dfrac{2m +1+1}{2}\right\rfloor$\\
+$=\left\lfloor m + 1\right\rfloor = m +1$\\
+$RHS = \left\lceil\dfrac{n}{2}\right\rceil = \left\lceil\dfrac{2m +1}{2}\right\rceil$
+$=\left\lceil m + \dfrac{1}{2} \right\rceil = m +1 = LHS$
+
+$\Box$\\
+
+\item
+\textbf{Lemma 2}: For any n $\in \mathbb{N}, \left\lfloor\dfrac{n}{2}\right\rfloor + 1 = \left\lceil\dfrac{n+1}{2}\right\rceil$
+
+\textbf{Proof By Cases:}\\
+\textbf{Even Case:}\\
+n can be represented as 2m for some value of m\\
+$LHS = \left\lfloor\dfrac{n}{2}\right\rfloor +1= \left\lfloor\dfrac{2m}{2}\right\rfloor + 1$\\
+$=\left\lfloor m \right\rfloor = m + 1$\\
+$RHS = \left\lceil\dfrac{n + 1}{2}\right\rceil = \left\lceil\dfrac{2m + 1}{2}\right\rceil$
+$=\left\lceil m + \dfrac{1}{2} \right\rceil = m + 1 = LHS$
+
+\textbf{Odd Case:}\\
+n can be represented as (2m + 1) for some value of m\\
+$LHS = \left\lfloor\dfrac{n}{2}\right\rfloor + 1 = \left\lfloor\dfrac{2m + 1}{2}\right\rfloor + 1 = \left\lfloor m +\dfrac{1}{2}\right\rfloor + 1$\\
+$=\left\lfloor m \right\rfloor + 1 = m +1$\\
+$RHS = \left\lceil\dfrac{n + 1}{2}\right\rceil = \left\lceil\dfrac{2m + 1 +1}{2}\right\rceil$
+$=\left\lceil m + 1 \right\rceil = m +1 = LHS$\\
+
+$\Box$\\
+
+\item
+\textbf{Let:} $T(1) = 0, T(n) = T(\left\lfloor\dfrac{n}{2}\right\rfloor) + T(\left\lceil\dfrac{n}{2}\right\rceil) + n$\\
+\textbf{Let:} $D(n) = T(n+1) - T(n)$\\
+
+\textbf{Lemma 3:} $D(1) = 2$\\
+\textbf{Direct Proof:}\\
+$D(1) = T(2) - T(1)$\\
+$= T(\left\lfloor\dfrac{2}{2}\right\rfloor) + T(\left\lceil\dfrac{2}{2}\right\rceil) + 2 - T(0)$\\
+$= T(1) + T(1) + 2 - T(0)$\\
+$= 2$\\
+$\Box$\\
+
+
+\textbf{Lemma 4:} $D(n) = D(\left\lfloor\dfrac{n}{2}\right\rfloor) + 1$\\
+\textbf{Direct Proof:}\\
+$D(n) = T(n+1) - T(n)$\\
+$=T(\left\lfloor\dfrac{n + 1}{2}\right\rfloor) + T(\left\lceil\dfrac{n + 1}{2}\right\rceil) + (n+1) - T(n)$\\
+$=T(\left\lceil\dfrac{n}{2}\right\rceil) + T(\left\lfloor\dfrac{n}{2}\right\rfloor + 1) + (n+1) - T(n)$ \textit{by lemma 1, 2}\\
+$=T(\left\lceil\dfrac{n}{2}\right\rceil) + T(\left\lfloor\dfrac{n}{2}\right\rfloor + 1) + (n+1) - T(\left\lfloor\dfrac{n}{2}\right\rfloor) - T(\left\lceil\dfrac{n}{2}\right\rceil) - n$\\
+$=T(\left\lfloor\dfrac{n}{2}\right\rfloor + 1) - T(\left\lfloor\dfrac{n}{2}\right\rfloor) +1$\\
+$= D(\left\lfloor\dfrac{n}{2}\right\rfloor) + 1$\\
+$\Box$\\
+
+\item
+\textbf{Lemma 5:} For any $n \in  \mathbb{N}$, if $n > 1$ and n is even then :\\
+$\left\lfloor lg(\left\lfloor\dfrac{n}{2}\right\rfloor)\right\rfloor = \left\lfloor\ lg(n) -1\right\rfloor$\\
+\textbf{Direct Proof:}\\
+Suppose that n is even:\\
+$\left\lfloor lg(\left\lfloor\dfrac{n}{2}\right\rfloor)\right\rfloor = \left\lfloor lg(\left\dfrac{n}{2}\right)\right\rfloor$ \textit{since n is even}\\
+$= \left\lfloor lg(n) - lg(2)\right\rfloor$\\
+$= \left\lfloor lg(n) - 1\right\rfloor$\\
+$= \left\lfloor lg(n)\right\rfloor -1$\\
+$\Box$\\
+
+
+
+\textbf{Lemma 6:} For any $m \in  \mathbb{N}$, if $m > 0$ then:\\
+$\left\lfloor lg(\left\lfloor 2m+1 \right\rfloor)\right\rfloor = \left\lfloor\ lg(2m)\right\rfloor$\\
+\textbf{Direct Proof:}\\
+Let $k = \left\lfloor lg(\left\lfloor 2m+1 \right\rfloor)\right\rfloor$\\
+$\left\lfloor lg(\left\lfloor 2m+1 \right\rfloor)\right\rfloor = k \xrightarrow[]{} k \leq lg(2m + 1) < k + 1$\\
+$\xrightarrow[]{} 2^k \leq 2m+1 < 2^{k+1}$\\
+$\xrightarrow{} 2^{k} -1 \leq 2m < 2^{k+1} -1 \textit{by transitivity}$\\
+$\xrightarrow{} 2^k -1 \leq 2m < 2^{k+1}$\\
+$\xrightarrow[]{} 2^k \leq 2m < 2^{k+1}$\textit{Since 2m is even}\\
+$\xrightarrow{} k \leq lg(2m) < k + 1$\\
+$\xrightarrow{}\left\lfloor\ lg(2m)\right\rfloor = k$\\
+$\Box$\\
+
+
+\textbf{Lemma 7:} For any $n \in  \mathbb{N}$, if $n > 1$ and n is odd then :\\
+$\left\lfloor lg(\left\lfloor\dfrac{n}{2}\right\rfloor)\right\rfloor = \left\lfloor\ lg(n) -1\right\rfloor$\\
+\textbf{Direct Proof:}\\
+$\left\lfloor lg(\left\lfloor\dfrac{n}{2}\right\rfloor)\right\rfloor = \left\lfloor\ lg(\dfrac{n-1}{2})\right\rfloor$\textit{Gets an even number since n is odd}\\
+$= \left\lfloor\ lg(n-1) - lg(2)\right\rfloor$\\
+$= \left\lfloor\ lg(n-1) - 1\right\rfloor$\\
+$= \left\lfloor\ lg(n-1)\right\rfloor -1$\\
+$= \left\lfloor\ lg(n)\right\rfloor -1$\textit{By lemma 6}\\
+$\Box$\\
+
+\textbf{Corollary 1:}
+By lemmas 5 and 7, for any $n \in  \mathbb{N}$, if $n > 1$ then :\\
+$\left\lfloor lg(\left\lfloor\dfrac{n}{2}\right\rfloor)\right\rfloor = \left\lfloor\ lg(n) -1\right\rfloor$\\
+
+
+\textbf{Lemma 8:} For any for any $n \in  \mathbb{N}$, if $n > 1$ then $D(n) = \left\lfloor\ lg(n)\right\rfloor +2$\\
+\textbf{Proof via Strong Induction:}\\
+\textbf{base case: n =1}\\
+$D(1) = 2$ \textit{lemma 3}\\
+$D(1) = \left\lfloor\ lg(1)\right\rfloor +2$\\
+$= 0 + 2 = 2$\\
+\textbf{Inductive Step:} Assume proposition holds up to but not including n.\\ Show that n follows.\\
+$D(n) = D(\left\lfloor\dfrac{n}{2} \right\rfloor) +1$\\
+$= \left\lfloor lg(\left\lfloor \dfrac{n}{2}\right\rfloor)\right\rfloor + 2 + 1$\textit{  By I.H}\\
+$=\left\lfloor\ lg(n)\right\rfloor -1 + 2 + 1$ \textit{ Corollary 1}\\
+$=\left\lfloor\ lg(n)\right\rfloor +2$\\
+$\Box$\\
+
+\item
+
+\textbf{Lemma 9:} $T(n) - T(1) = \sum^{n-1}_{k = 1}D(k)$\\
+\textbf{Direct Proof:}\\
+$\sum^{n-1}_{k = 1}D(k) = D(1) + D(2) + D(3) + ... + D(n-3) + D(n-2) + D(n-1)$\\
+$= T(2) - T(1) + T(3) - T(2) + T(4) - T(3) +\\ ... + T(n-2) - T(n-3) + T(n-1) - T(n-2) + T(n) - T(n-1)$\\
+$=T(n)-T(1)$\textit{Due to cancellations}\\
+$\Box$\\
+\textbf{Corollary 2:}\\
+By lemmas 9 and 8, $T(n) = \sum^{n-1}_{k = 1}\left\lfloor\ (lg(n) + 2)\right\rfloor$\\
+
+\item
+
+\textbf{Lemma 10:} $T(n) \in O(nlog(n))$\\
+$T(n) = \sum^{n-1}_{k = 1}\left\lfloor\ (lg(n) + 2)\right\rfloor$\\
+$= \sum^{n-1}_{k = 1}\left\lfloor\ (lg(n))\right\rfloor  + \sum^{n-1}_{k = 1}2$\\
+$\leq nlg(n) + 2n$\\
+$\xrightarrow[]{} T(n) \in O(nlog(n))$\\
+$\Box$\\
+
+
+\end{enumerate}
+
+
+\end{document}
